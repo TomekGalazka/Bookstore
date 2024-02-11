@@ -2,35 +2,52 @@ package org.bookstore.store;
 
 import org.bookstore.books.Book;
 import org.bookstore.categories.Category;
+import org.bookstore.clients.Client;
 import org.bookstore.service.BookstoreService;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Bookstore {
-    private final Set<Book> bookSet;
-    private final Set<Category> categorySet;
-    private final Map<Long, String> clientList;
-    private final BookstoreService bookstoreService;
+    private Set<Book> bookSet;
+    private Set<Category> categorySet;
+    private Set<Client> clientSet;
+    private BookstoreService bookstoreService;
+
+    private Map<Long, List<Book>> reservedItems;
+
+    private Map<Long, List<Book>> boughtItems;
 
     public Bookstore(BookstoreService bookstoreService) {
         this.bookSet = new HashSet<>();
         this.categorySet = new HashSet<>();
-        this.clientList = new HashMap<>();
+        this.clientSet = new HashSet<>();
         this.bookstoreService = bookstoreService;
+        this.reservedItems = new HashMap<>();
+        this.boughtItems = new HashMap<>();
     }
 
-    public Set<Book> getBookList() {
+    public Set<Book> getBookSet() {
         return bookSet;
     }
 
-    public Set<Category> getCategoryList() {
+    public Set<Category> getCategorySet() {
         return categorySet;
     }
 
-    public Map<Long, String> getClientList() {
-        return clientList;
+    public Set<Client> getClientSet() {
+        return clientSet;
     }
+
+    public BookstoreService getBookstoreService() {
+        return bookstoreService;
+    }
+
+    public Map<Long, List<Book>> getReservedItems() {
+        return reservedItems;
+    }
+
+    public Map<Long, List<Book>> getBoughtItems() {
+        return boughtItems;
+    }
+
 }
