@@ -140,30 +140,34 @@ public class BookstoreService implements StoreService<Book, Long, Book, Client, 
         System.out.println("Generating report...done.");
         System.out.println("Available books: ");
         for (Book book : itemSet ) {
-            System.out.println("Book title: " + book.title());
-            System.out.println("Book year of publication: " + book.yearOfPublication());
-            System.out.println("Book price: " + book.price());
-            System.out.println("Book copies available: " + book.copiesAvailable());
-            System.out.println("Book category: " + book.category().categoryName());
+            System.out.println("....Printing book data...");
+            System.out.println("    -Book title: " + book.title());
+            System.out.println("    -Book year of publication: " + book.yearOfPublication());
+            System.out.println("    -Book price: " + book.price());
+            System.out.println("    -Book copies available: " + book.copiesAvailable());
+            System.out.println("    -Book category: " + book.category().categoryName());
         }
         System.out.println("Client list: ");
         for (Client client : clientSet) {
-            System.out.println("Client name: " + client.name());
-            System.out.println("Client surname: " + client.surname());
-            System.out.println("Client email: " + client.email());
+            System.out.println("....Printing client data...");
+            System.out.println("    -Client name: " + client.name());
+            System.out.println("    -Client surname: " + client.surname());
+            System.out.println("    -Client email: " + client.email());
         }
         System.out.println("Reserved books: ");
         for (Map.Entry<Long, List<Book>> entry : reservedItems.entrySet()) {
             Optional<Client> client = clientSet.stream().filter(c -> c.id() == entry.getKey()).findFirst();
             if (client.isPresent()) {
                 List<Book> books = entry.getValue();
-                System.out.println("Client ID: " + client.get().id());
-                System.out.println("Client Name: " + client.get().name());
-                System.out.println("Client Surame: " + client.get().surname());
-                System.out.println("Client Email: " + client.get().email());
-                System.out.println("Books reserved by Mr./Mrs " + client.get().surname() + ":");
+                System.out.println("....Printing reserved books data...");
+                System.out.println("    -Client ID: " + client.get().id());
+                System.out.println("    -Client Name: " + client.get().name());
+                System.out.println("    -Client Surame: " + client.get().surname());
+                System.out.println("    -Client Email: " + client.get().email());
+                System.out.println("    -Books reserved by Mr./Mrs " + client.get().surname() + ":");
                 for (Book book : books) {
-                    System.out.println("Book title: " + book.title());
+                    System.out.println("....Printing reserved books data...");
+                    System.out.println("    -Book title: " + book.title());
                 }
             }
         }
@@ -195,10 +199,18 @@ public class BookstoreService implements StoreService<Book, Long, Book, Client, 
     }
 
     public Set<Book> adjustBookNumber(Book book, Set<Book> bookSet) {
-        Book soldBook = bookSet.stream().filter(b -> b.equals(book)).findFirst().orElse(null);
-        if (soldBook != null) {
-            soldBook.adjustCopiesAvailable(soldBook.copiesAvailable() - 1 );
+        Optional<Book> soldBookOptional = bookSet.stream()
+                .filter(b -> b.equals(book))
+                .findFirst();
+
+        if (soldBookOptional.isPresent()) {
+            Book soldBook = soldBookOptional.get();
+            Book modifiedBook = soldBook.adjustCopiesAvailable(soldBook.copiesAvailable() - 1);
+
+            bookSet.remove(soldBook);
+            bookSet.add(modifiedBook);
         }
+
         return bookSet;
     }
 
