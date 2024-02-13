@@ -46,50 +46,58 @@ public class Bookstore {
         return boughtItems;
     }
 
-    public void addBook(Book book) {
-
+    public void addBookFromUserInput(Scanner scanner) {
+        Book book = readBookDetails(scanner);
         try {
             setBookSet(bookstoreService.addItem(book, getBookSet()));
+            System.out.println("*** Book added successfully! ***");
         }
         catch (BookstoreService.ItemAlreadyExistException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    public void removeBook(Book book) {
-
+    public void removeBookFromUserInput(Scanner scanner) {
+        Book book = readBookDetails(scanner);
         try {
             setBookSet(bookstoreService.removeItem(book, getBookSet()));
+            System.out.println("*** Book removed successfully! ***");
         } catch (BookstoreService.ItemNotFoundException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    public void editBook(Book oldBook, Book newBook) {
+    public void editBookFromUserInput(Scanner scanner) {
+        Book oldBook = readBookDetails(scanner);
+        Book newBook = readBookDetails(scanner);
         try {
             setBookSet(bookstoreService.editItem(oldBook, newBook, getBookSet()));
+            System.out.println("*** Book edited successfully! ***");
         } catch (BookstoreService.ItemNotFoundException | BookstoreService.ItemAlreadyExistException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    public void addCategory(Category category) {
-
+    public void addCategoryFromUserInput(Scanner scanner) {
+        Category category = readCategoryDetails(scanner);
         try {
             setCategorySet(bookstoreService.addItemCategory(category, getCategorySet()));
+            System.out.println("*** Category added successfully! ***");
         } catch (BookstoreService.CategoryAlreadyExistsException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    public void reserveBook(Book book, Client client) {
-
+    public void reserveBookFromUserInput(Scanner scanner) {
+        Book book = readBookDetails(scanner);
+        Client client = readClientDetails(scanner);
         try {
             setReservedItems(bookstoreService.reserveItem(book,
                     getBookSet(),
                     client,
                     getClientSet(),
                     getReservedItems()));
+            System.out.println("*** Book successfully reserved! ***");
         } catch (BookstoreService.ItemNotFoundException |
                  BookstoreService.ItemNotAvaiableException |
                  BookstoreService.ItemAlreadyExistException e) {
@@ -97,11 +105,13 @@ public class Bookstore {
         }
     }
 
-    public void sellBook(Book book, Client client) {
-
+    public void sellBookFromUserInput(Scanner scanner) {
+        Book book = readBookDetails(scanner);
+        Client client = readClientDetails(scanner);
         try {
             setBoughtItems(bookstoreService.sellItem(book, getBookSet(), client, getClientSet(), getBoughtItems()));
             setBookSet(bookstoreService.adjustBookNumber(book, getBookSet()));
+            System.out.println("*** Book successfully bought! ***");
         } catch (BookstoreService.ItemNotFoundException |
                  BookstoreService.ItemNotAvaiableException e) {
             System.err.println(e.getMessage());
@@ -113,10 +123,11 @@ public class Bookstore {
         bookstoreService.generateReport(getBookSet(), getClientSet(), getReservedItems(), getBoughtItems());
     }
 
-    public void addClient(Client client) {
-
+    public void addClientFromUserInput(Scanner scanner) {
+        Client client = readClientDetails(scanner);
         try {
             setClientSet(bookstoreService.addClient(client, getClientSet()));
+            System.out.println("*** New client added! ***");
         } catch (BookstoreService.ItemAlreadyExistException e) {
             System.err.println(e.getMessage());
         }
@@ -141,4 +152,91 @@ public class Bookstore {
     public void setBoughtItems(Map<Long, List<Book>> boughtItems) {
         this.boughtItems = boughtItems;
     }
+    private static Book readBookDetails(Scanner scanner) {
+        System.out.println("Enter book details:");
+
+        scanner.nextLine();
+
+        System.out.print("Title: ");
+        String title = getStringInput(scanner);
+
+        System.out.print("Author: ");
+        String author = getStringInput(scanner);
+
+        System.out.print("Year of Publication: ");
+        int yearOfPublication = getIntInput(scanner);
+
+        System.out.print("Price: ");
+        double price = getDoubleInput(scanner);
+
+        System.out.print("Copies Available: ");
+        int copiesAvailable = getIntInput(scanner);
+
+        Category category = readCategoryDetails(scanner);
+
+        return new Book(title, author, yearOfPublication, price, copiesAvailable, category);
+    }
+
+    private static Category readCategoryDetails(Scanner scanner) {
+        System.out.println("Enter category details:");
+        System.out.print("Category Name: ");
+        String categoryName = getStringInput(scanner);
+
+        System.out.print("Category Description: ");
+        String categoryDescription = getStringInput(scanner);
+
+        return new Category(categoryName, categoryDescription);
+    }
+
+    private static Client readClientDetails(Scanner scanner) {
+        System.out.println("Enter client details:");
+
+        System.out.print("ID: ");
+        long id = getLongInput(scanner);
+
+        System.out.print("Name: ");
+        String name = getStringInput(scanner);
+
+        System.out.print("Surname: ");
+        String surname = getStringInput(scanner);
+
+        System.out.print("Email: ");
+        String email = getStringInput(scanner);
+
+        return new Client(id, name, surname, email);
+    }
+    private static String getStringInput(Scanner scanner) {
+        return scanner.nextLine().trim();
+    }
+
+    private static int getIntInput(Scanner scanner) {
+        while (true) {
+            try {
+                return Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid input. Please enter a valid integer.");
+            }
+        }
+    }
+
+    private static double getDoubleInput(Scanner scanner) {
+        while (true) {
+            try {
+                return Double.parseDouble(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid input. Please enter a valid double.");
+            }
+        }
+    }
+
+    private static long getLongInput(Scanner scanner) {
+        while (true) {
+            try {
+                return Long.parseLong(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid input. Please enter a valid long.");
+            }
+        }
+    }
+
 }
